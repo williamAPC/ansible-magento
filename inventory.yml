@@ -1,0 +1,10 @@
+all:
+ hosts:
+  web:
+    ansible_host: 199.999.999.999
+    ansible_user: ubuntu
+    ansible_ssh_private_key_file: XX.pem
+  db:
+    ansible_host: 299.999.999.999
+    ansible_user: ubuntu
+    ansible_ssh_private_key_file: XX.pem

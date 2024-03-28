@@ -1,19 +1,46 @@
----
-- name: Install Mysql package
-  yum: name={{ item }} state=present
-  with_items:
-   - mysql-server
-   - MySQL-python
-   - libselinux-python
-   - libsemanage-python
+- name: Add PGP key
+  apt_key:
+    keyserver: hkp://pgp.mit.edu:80
+    id: B7B3B788A8D3785C
 
-- name: Configure SELinux to start mysql on any port
-  seboolean: name=mysql_connect_any state=true persistent=yes
+# - name: Add a key from a file on the Ansible server.
+#   apt_key:
+#     data: "{{ lookup('file', 'mysql_pubkey.asc') }}"
+#     state: present
+
+- name: Add official APT repository
+  apt_repository:
+    repo: "deb http://repo.mysql.com/apt/ubuntu/ bionic mysql-5.7"
+
+- name: remove mysql server 8
+  apt:
+    name: mysql-server-8
+    state: absent
+    update_cache: yes
+
+- name: Install mysql server 5.7
+  apt:
+    name: mysql-server-5.7
+    state: present
+    update_cache: yes
+
+
+- name: Install required packages for apt_repository
+  apt: name={{ item }} state=present
+  with_items:
+  - python3-apt
+  - python3-pycurl
+  - python3-mysqldb
+
+   
 
 - name: Create Mysql configuration file
-  template: src=my.cnf.j2 dest=/etc/my.cnf
+  template: src=my.cnf.j2 dest=/etc/mysql/my.cnf
   notify: 
   - restart mysql
 
 - name: Start Mysql Service
-  service: name=mysqld state=started enabled=true
+  service: name=mysql state=started enabled=true
+
+- name: Create Magento database
+  mysql_db: name={{ mag_db_name }} state=present

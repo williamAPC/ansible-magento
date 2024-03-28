@@ -1,22 +1,31 @@
 ---
 - name: Install php-fpm and deps 
-  yum: name={{ item }} state=present
+  apt: name={{ item }} state=present
   with_items:
     - php
+    - php-cli
     - php-fpm
-    - php-enchant
-    - php-IDNA_Convert
-    - php-mbstring
+    - php-json
     - php-mysql
-    - php-PHPMailer
-    - php-process
-    - php-simplepie
+    - php-zip
+    - php-gd
+    - php-mbstring
+    - php-curl
     - php-xml
+    - php-pear
+    - php-bcmath
+    - libphp-phpmailer
+    - libphp-simplepie  
 
 - name: Disable default pool
-  command: mv /etc/php-fpm.d/www.conf /etc/php-fpm.d/www.disabled creates=/etc/php-fpm.d/www.disabled
-  notify: restart php-fpm
+  command: mv /etc/php/7.4/fpm/pool.d/www.conf /etc/php/7.4/fpm/pool.d/www.disabled creates=/etc/php/7.4/fpm/pool.d/www.disabled
  
 - name: Copy php-fpm configuration
-  template: src=magento.conf dest=/etc/php-fpm.d/
-  notify: restart php-fpm
+  template: src=magento.conf dest=/etc/php/7.4/fpm/pool.d/
+
+# - name: Copy mcrypt.ini to correct location
+#   template: src=mcrypt.ini dest=/etc/php/mods-available/
+
+# - name: Fix php-fpm for Ubuntu 13.10
+#   command: phpenmod mcrypt
+#   notify: restart php-fpm

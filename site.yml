@@ -1,13 +1,22 @@
----
-- name: Install Magento, MySQL, Nginx, and PHP-FPM
-  hosts: magento-server
+# gather facts about db server
+- hosts: db
+  tasks: []
+  
+- name: Install Magento, Nginx, and PHP-FPM on web servers
+  hosts: web
   user: root
-  # remote_user: user
-  # sudo: yes
+ # sudo: yes
 
   roles:
     - common
-    - mysql 
     - nginx
     - php-fpm
     - magento
+
+- name: Install MySQL on DB servers
+  hosts: db
+  user: root
+
+  roles:
+    - mysql
+    - common
